@@ -1,0 +1,35 @@
+node_modules/
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+.kotlin/
+*.orig.*
+
+# مفاتيح التوقيع وأي أسرار: ما تنرفع أبداً
+*.jks
+*.keystore
+*.p8
+*.p12
+*.key
+*.pem
+signing.properties
+.env*
+
+.metro-health-check*
+npm-debug.*
+*.tsbuildinfo
+.DS_Store
+
+# ملفات تتولّد وقت البناء
+/ios
+/android
+/audio
+*.apk
+
+# تتغيّر حسب اللغة المختارة (tools/use-lang.js)
+src/data/words.json
+src/data/lang.json
+assets/icon.png
+assets/android-icon-*.png
+assets/splash-icon.png

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <!-- العرض فوق التطبيقات: يسمح للتطبيق يرجع نفسه للواجهة من الخلفية -->
+  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+  <!-- حتى نقدر نشوف إذا محرّك النطق مال Google منزّل (أندرويد 11+) -->
+  <queries>
+    <package android:name="com.google.android.tts" />
+    <intent>
+      <action android:name="android.intent.action.TTS_SERVICE" />
+    </intent>
+  </queries>
+
+  <application>
+    <service
+      android:name="expo.modules.qufllock.LockService"
+      android:exported="true"
+      android:label="@string/qufl_service_label"
+      android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+      <intent-filter>
+        <action android:name="android.accessibilityservice.AccessibilityService" />
+      </intent-filter>
+      <meta-data
+        android:name="android.accessibilityservice"
+        android:resource="@xml/qufl_accessibility" />
+    </service>
+  </application>
+</manifest>

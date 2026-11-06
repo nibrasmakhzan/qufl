@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="qufl_service_label">قُفل: قفل الموبايل لحد ما تخلص كلمات اليوم</string>
+  <string name="qufl_accessibility_description">تستعمل هذه الخدمة لمعرفة التطبيق المفتوح فقط، حتى ترجعك لاختبار الكلمات إذا ما خلصته. لا تقرأ أي محتوى من الشاشة ولا ترسل أي بيانات. المكالمات والطوارئ والكيبورد تبقى شغالة دائماً.</string>
+</resources>

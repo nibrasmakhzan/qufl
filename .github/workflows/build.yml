@@ -1,0 +1,70 @@
+# يبني تطبيقات قُفل ويحطها برابط تنزيل ثابت:
+#   https://github.com/<الحساب>/qufl/releases/download/app/qufl-en.apk  (و tr و es)
+# تشغيل: Actions ← «بناء التطبيقات» ← Run workflow ← اختار اللغة (أو all).
+name: بناء التطبيقات
+on:
+  workflow_dispatch:
+    inputs:
+      lang:
+        description: اللغة
+        required: true
+        type: choice
+        options: [all, en, tr, es]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        lang: [en, tr, es]
+    steps:
+      - name: تخطّي اللغات غير المطلوبة
+        id: skip
+        run: echo "skip=${{ inputs.lang != 'all' && inputs.lang != matrix.lang }}" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4
+        if: steps.skip.outputs.skip != 'true'
+      - uses: actions/setup-node@v4
+        if: steps.skip.outputs.skip != 'true'
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/setup-java@v4
+        if: steps.skip.outputs.skip != 'true'
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: جهّز المشروع
+        if: steps.skip.outputs.skip != 'true'
+        run: |
+          npm ci --no-audit --no-fund
+          node tools/use-lang.js ${{ matrix.lang }}
+          npx expo prebuild --platform android --no-install
+      - name: مفتاح التوقيع
+        if: steps.skip.outputs.skip != 'true'
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        run: |
+          echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/qufl-release.jks"
+          printf 'storeFile=%s\nstorePassword=%s\nkeyAlias=qufl\nkeyPassword=%s\n' \
+            "$RUNNER_TEMP/qufl-release.jks" "$KEYSTORE_PASSWORD" "$KEYSTORE_PASSWORD" > "$RUNNER_TEMP/signing.properties"
+          echo "QUFL_SIGNING_PROPS=$RUNNER_TEMP/signing.properties" >> "$GITHUB_ENV"
+          node tools/patch-signing.js android/app/build.gradle
+          printf '\norg.gradle.jvmargs=-Xmx6g -XX:MaxMetaspaceSize=1g\nreactNativeArchitectures=arm64-v8a\n' >> android/gradle.properties
+      - name: ابنِ
+        if: steps.skip.outputs.skip != 'true'
+        run: cd android && ./gradlew assembleRelease --no-daemon --console=plain
+      - name: ارفع للرابط الثابت
+        if: steps.skip.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp android/app/build/outputs/apk/release/app-release.apk qufl-${{ matrix.lang }}.apk
+          gh release view app >/dev/null 2>&1 || gh release create app --title "قُفل: التطبيقات" --notes "روابط تنزيل ثابتة. نزّل الملف من موبايل أندرويد وثبّته."
+          gh release upload app qufl-${{ matrix.lang }}.apk --clobber

@@ -1,0 +1,14 @@
+{
+  "code": "es",
+  "appName": "قُفل إسباني",
+  "slug": "qufl-es",
+  "package": "com.qufl.spanish",
+  "projectId": "1a40347f-877c-4db0-86ca-1e2a67468b6a",
+  "nameAr": "الإسباني",
+  "tag": "ESPAÑOL",
+  "locale": "es-ES",
+  "placeholder": "escribe aquí",
+  "accent": "#FFC24B",
+  "blob": "#A86B12",
+  "fold": { "á": "a", "à": "a", "é": "e", "í": "i", "ó": "o", "ú": "u", "ü": "u", "ñ": "n" }
+}

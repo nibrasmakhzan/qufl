@@ -1,0 +1,48 @@
+# يسجّل نطق كلمات لغة وحدة (Piper) ويرفع الملفات للمشروع.
+# تشغيل: Actions ← «تسجيل النطق» ← Run workflow ← اختار اللغة.
+name: تسجيل النطق
+on:
+  workflow_dispatch:
+    inputs:
+      lang:
+        description: اللغة
+        required: true
+        type: choice
+        options: [en, tr, es]
+
+permissions:
+  contents: write
+
+jobs:
+  audio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: نصّب Piper و ffmpeg
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          pip install -q piper-tts
+      - name: نزّل الصوت
+        run: |
+          mkdir -p voices
+          HF=https://huggingface.co/rhasspy/piper-voices/resolve/main
+          case "${{ inputs.lang }}" in
+            tr) P=tr/tr_TR/dfki/medium/tr_TR-dfki-medium ;;
+            es) P=es/es_MX/claude/high/es_MX-claude-high ;;
+            en) P=en/en_US/lessac/high/en_US-lessac-high ;;
+          esac
+          curl -sfL "$HF/$P.onnx" -o "voices/$(basename $P).onnx"
+          curl -sfL "$HF/$P.onnx.json" -o "voices/$(basename $P).onnx.json"
+      - name: سجّل
+        run: python tools/gen-audio.py ${{ inputs.lang }} voices
+      - name: ارفع الملفات
+        run: |
+          git config user.name "qufl-bot"
+          git config user.email "qufl-bot@users.noreply.github.com"
+          git add langs/${{ inputs.lang }}/audio
+          git commit -m "نطق ${{ inputs.lang }}" || echo "ما كو تغيير"
+          git push

@@ -1,0 +1,14 @@
+{
+  "code": "en",
+  "appName": "قُفل",
+  "slug": "qufl",
+  "package": "com.qufl.english",
+  "projectId": "6f43ef8f-eaac-439f-8732-6a9a86099e03",
+  "nameAr": "الإنكليزي",
+  "tag": "ENGLISH",
+  "locale": "en-US",
+  "placeholder": "type here",
+  "accent": "#7B92FF",
+  "blob": "#2E3BB8",
+  "fold": {}
+}
