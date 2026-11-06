@@ -45,4 +45,4 @@ jobs:
           git config user.email "qufl-bot@users.noreply.github.com"
           git add langs/${{ inputs.lang }}/audio
           git commit -m "نطق ${{ inputs.lang }}" || echo "ما كو تغيير"
-          git push
+          for i in 1 2 3 4 5; do git pull --rebase -q && git push && break; sleep 10; done
