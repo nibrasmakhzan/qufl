@@ -9,6 +9,7 @@ if (!code || !fs.existsSync(dir)) {
   console.error('usage: node tools/use-lang.js en|tr|es');
   process.exit(1);
 }
+fs.mkdirSync(path.join(root, 'src', 'data'), { recursive: true });
 fs.copyFileSync(path.join(dir, 'words.json'), path.join(root, 'src', 'data', 'words.json'));
 fs.copyFileSync(path.join(dir, 'lang.json'), path.join(root, 'src', 'data', 'lang.json'));
 for (const f of fs.readdirSync(dir).filter((f) => f.endsWith('.png'))) {
